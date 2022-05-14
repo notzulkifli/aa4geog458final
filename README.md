@@ -1,5 +1,5 @@
 # Group AA4
-## Name: Cyber-verse
+## Group Name: Cyber-verse
 
 ### Project Idea
 
@@ -24,9 +24,9 @@ Primary functions and major data sources
 
 ### These are the major data sources that we would like to consider:
 
-- http://cve.mitre.org/data/downloads/
-- https://cwe.mitre.org/data/downloads.html 
-- https://www.dropbox.com/s/9ndbl34zweit595/FinalSource_Real%20Cases.csv?dl=0
+- [CVE Data](http://cve.mitre.org/data/downloads/)
+- [Common Weakness Enumeration Data](https://cwe.mitre.org/data/downloads.html)
+- [Cases Data](https://www.dropbox.com/s/9ndbl34zweit595/FinalSource_Real%20Cases.csv?dl=0)
 
 ### Targeted audience
 
@@ -36,8 +36,8 @@ Based on our discussion, our project’s target audience would be intended to lo
 
 We will make an additional page about recent cyber attack news from those links below and describe how the current world gets some impact from the cyber attacks. 
 
-- https://www.gov.uk/government/news/russia-behind-cyber-attack-with-europe-wide-impact-an-hour-before-ukraine-invasion 
-- https://portswigger.net/daily-swig/cyber-attacks 
+- [Gov.uk](https://www.gov.uk/government/news/russia-behind-cyber-attack-with-europe-wide-impact-an-hour-before-ukraine-invasion) 
+- [The Daily Swig](https://portswigger.net/daily-swig/cyber-attacks) 
 
 We may also include images to the about page
 
@@ -50,8 +50,8 @@ We may also include images to the about page
     - Style: …/mapbox/dark-v10
 - Thematic layers
     - Choropleth map layer for received attacks
-        - https://ocslab.hksecurity.net/Datasets/web-hacking-profiling?msclkid=78082dcac75111ec9b9e2790c96b6f26
-        - https://www.dropbox.com/s/9ndbl34zweit595/FinalSource_Real%20Cases.csv?dl=0 
+        - [HCRL](https://ocslab.hksecurity.net/Datasets/web-hacking-profiling?msclkid=78082dcac75111ec9b9e2790c96b6f26)
+        - [Cases Data](https://www.dropbox.com/s/9ndbl34zweit595/FinalSource_Real%20Cases.csv?dl=0 )
     - Vector layers
     - Attribute will be number of attacks
 - Coordinated charts
@@ -68,7 +68,7 @@ We may also include images to the about page
  
 
 - How to arrange all the components on the graphical user interface (GUI)?
-    - https://www.figma.com/file/eEakc37CPT0rODaMx9QVYq/CyberAttack-Design-Prototype 
+    - [Figma: Cyber Attacks GUI Prototype](https://www.figma.com/file/eEakc37CPT0rODaMx9QVYq/CyberAttack-Design-Prototype) 
         - We will have separate HTML files so that on the navbar the user can navigate between the different pages. These pages will include:
             - Main Map Page: Smartdashboard, main functions, interactive map and legend
             - About Page: Our Mission Goal and Our Vision Statement
