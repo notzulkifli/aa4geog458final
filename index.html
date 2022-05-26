@@ -18,15 +18,15 @@
 
         /* sidebar */
         #info {
-        z-index: 1000;
-        position: absolute;
-        width: 500px;
-        top: 1%;
-        bottom: 1%;
-        left: .5%;
-        padding: 40px 15px 900px 15px;
-        background: #343a40;
-        color: white;
+            z-index: 1000;
+            position: absolute;
+            width: 500px;
+            top: 1%;
+            bottom: 1%;
+            left: .5%;
+            padding: 40px 15px 900px 15px;
+            background: #343a40;
+            color: white;
         }
 
         #map {
@@ -66,24 +66,24 @@
 
         async function geojsonFetch() {
 
-        // Await operator is used to wait for a promise. 
-        // An await can cause an async function to pause until a Promise is settled.
-        let response;
-        response = await fetch('assets/aws_honeypot.geojson');
-        attacks = await response.json();
+            // Await operator is used to wait for a promise. 
+            // An await can cause an async function to pause until a Promise is settled.
+            let response;
+            response = await fetch('assets/aws_honeypot.geojson');
+            attacks = await response.json();
 
 
-        map.on('load', () => { //simplifying the function statement: arrow with brackets to define a function
+            map.on('load', () => { //simplifying the function statement: arrow with brackets to define a function
 
-        });
+            });
 
 
 
-        //load data to the map as new layers.
-        //map.on('load', function loadingData() {
-        map.on('idle', () => { //simplifying the function statement: arrow with brackets to define a function
+            //load data to the map as new layers.
+            //map.on('load', function loadingData() {
+            map.on('idle', () => { //simplifying the function statement: arrow with brackets to define a function
 
-        });
+            });
 
 
 
@@ -101,38 +101,35 @@
             // add a source of the data and then add the layer out of the source
             map.addSource('aws_honeypot', {
                 type: 'geojson',
-                data: 'assets/aws_honeypot.geojson',
-                cluster: true,
-                clusterMaxZoom: 14,
-                clusterRadius: 50
+                data: 'assets/aws_honeypot.geojson'
+                // cluster: true,
+                // clusterMaxZoom: 14,
+                // clusterRadius: 50
             });
 
             map.addLayer({
-                    'id': 'clusters',
-                    'type': 'circle',
-                    'source': 'aws_honeypot',
-                    filter: ['has', 'point_count'],
-                    paint: {
-                        'circle-color': [
-                        'step',
-                        ['get', 'point_count'],
-                        '#51bbd6',
-                        100,
-                        '#f1f075',
-                        750,
-                        '#f28cb1'
-                        ],
-                        'circle-radius': [
-                        'step',
-                        ['get', 'point_count'],
-                        20,
-                        100,
-                        30,
-                        750,
-                        40
-                        ]
-                        }
-                    });
+                'id': 'clusters',
+                'type': 'circle',
+                'source': 'aws_honeypot',
+                filter: ['has', 'proto'],
+                paint: {
+                    'circle-color': [
+                        'match',
+                        ['get', 'proto'],
+                        'UDP',
+                        '#fbb03b',
+                        'TCP',
+                        '#223b53',
+                        'ICMP',
+                        '#e55e5e',
+                        /* other */
+                        '#ccc'
+                    ],
+                    'circle-stroke-color': 'white',
+                    'circle-stroke-width': 1,
+                    'circle-opacity': 0.6
+                }
+            });
 
 
             // click on tree to view cases in a popup
@@ -145,7 +142,7 @@
                     clusterId,
                     (err, zoom) => {
                         if (err) return;
-                
+
                         map.easeTo({
                             center: features[0].geometry.coordinates,
                             zoom: zoom
@@ -154,38 +151,116 @@
                 );
             });
 
-            chart = c3.generate({
-            bindto: '#earthquake-chart',
-            data: {
-                x: 'Protocol',
-                columns: [
-                    ['Protocol', 'TCP', 'UDP', 'ICMP'],
-                    ['Values', 49, 76, 253]
-                ],
-                type: 'bar'
-            },
-            axis: {
-                y: {
-                    label : {
-                        text: 'Number of Attacks',
-                        position: 'outer-middle'
+            // found the the Protocols of all the attacks in the displayed map view.        
+            //protocols = calProtocols(aws_honeypot, map.getBounds());
+            var protocols = {'TCP':3,'ICMP':7, 'UDP':5}
+
+            // enumerate the number of earthquakes.
+            // numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
+
+            // // update the content of the element earthquake-count.
+            // document.getElementById("earthquake-count").innerHTML = numEarthquakes;
+
+            // add "proot" to the beginning of the x variable - the magnitude, and "#" to the beginning of the y variable - the number of earthquake of similar magnitude.
+            x = Object.keys(protocols);
+            x.unshift("proto")
+            y = Object.values(protocols);
+            y.unshift("#")
+
+            protocolsChart = c3.generate({
+                size: {
+                    height: 350,
+                    width: 460
+                },
+                data: {
+                    x: 'proto',
+                    columns: [x, y],
+                    type: 'bar', // make a bar chart.
+                    colors: {
+                        '#': (d) => {
+                            return colors[d["x"]];
+                        }
+                    }
+                    // onclick: function (d) { // update the map and sidebar once the bar is clicked.
+                    //     let floor = parseInt(x[1 + d["x"]]),
+                    //         ceiling = floor + 1;
+                    //     // combine two filters, the first is ['>=', 'mag', floor], the second is ['<', 'mag', ceiling]
+                    //     // the first indicates all the earthquakes with magnitude greater than floor, the second indicates
+                    //     // all the earthquakes with magnitude smaller than the ceiling.
+                    //     map.setFilter('earthquakes-point',
+                    //         ['all',
+                    //             ['>=', 'mag', floor],
+                    //             ['<', 'mag', ceiling]
+                    //         ]);
+                    // }
+                },
+                axis: {
+                    x: { //magnitude
+                        type: 'category',
+                    },
+                    y: { //count
+                        tick: {
+                            values: [10, 20, 30, 40]
+                        }
                     }
                 },
-                x: {
-                    type: 'category',
-                }
-            },
-            bar: {
-                width: {
-                    ratio: 0.5
-                }
-            },
-            legend: {
-                show: false
-            }
+                legend: {
+                    show: false
+                },
+                bindto: "#earthquake-chart" //bind the chart to the place holder element "earthquake-chart".
             });
-        });
 
+            // chart = c3.generate({
+            //     bindto: '#earthquake-chart',
+            //     data: {
+            //         x: 'Protocol',
+            //         columns: [
+            //             ['Protocol', 'TCP', 'UDP', 'ICMP'],
+            //             ['Values', 49, 76, 253]
+            //         ],
+            //         type: 'bar'
+            //     },
+            //     axis: {
+            //         y: {
+            //             label: {
+            //                 text: 'Number of Attacks',
+            //                 position: 'outer-middle'
+            //             }
+            //         },
+            //         x: {
+            //             type: 'category',
+            //         }
+            //     },
+            //     bar: {
+            //         width: {
+            //             ratio: 0.5
+            //         }
+            //     },
+            //     legend: {
+            //         show: false
+            //     }
+            // });
+            // call the geojson loading function
+            geojsonFetch();
+
+            // function calProtocols(currentProtocols, currentMapBounds) {
+
+            //     let protocolClasses = {
+            //         "TCP": 0,
+            //         "UDP": 0,
+            //         "ICMP": 0
+            //     };
+            //     currentProtocols.features.forEach(function (d) { // d indicate a feature of currentProtocols
+            //         // contains is a spatial operation to determine whether a point within a bbox or not.
+            //         if (currentMapBounds.contains(d.geometry.coordinates)) {
+            //             // if within, the # of the earthquake in the same magnitude increase by 1.
+            //             protocolClasses[d.properties.proto] += 1;
+            //         }
+
+            //     })
+            //     return protocolClasses;
+            // }
+        });
     </script>
 
 </body>
