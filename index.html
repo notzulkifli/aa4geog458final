@@ -152,11 +152,11 @@
             });
 
             // found the the Protocols of all the attacks in the displayed map view.        
-            //protocols = calProtocols(aws_honeypot, map.getBounds());
-            var protocols = {'TCP':3,'ICMP':7, 'UDP':5}
+            protocols = calProtocols(aws_honeypot, map.getBounds());
+            // var protocols = {'TCP':3,'ICMP':7, 'UDP':5}
 
             // enumerate the number of earthquakes.
-            // numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
+            numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
 
             // // update the content of the element earthquake-count.
             // document.getElementById("earthquake-count").innerHTML = numEarthquakes;
@@ -243,23 +243,23 @@
             // call the geojson loading function
             geojsonFetch();
 
-            // function calProtocols(currentProtocols, currentMapBounds) {
+            function calProtocols(currentProtocols, currentMapBounds) {
 
-            //     let protocolClasses = {
-            //         "TCP": 0,
-            //         "UDP": 0,
-            //         "ICMP": 0
-            //     };
-            //     currentProtocols.features.forEach(function (d) { // d indicate a feature of currentProtocols
-            //         // contains is a spatial operation to determine whether a point within a bbox or not.
-            //         if (currentMapBounds.contains(d.geometry.coordinates)) {
-            //             // if within, the # of the earthquake in the same magnitude increase by 1.
-            //             protocolClasses[d.properties.proto] += 1;
-            //         }
+                let protocolClasses = {
+                    "TCP": 0,
+                    "UDP": 0,
+                    "ICMP": 0
+                };
+                currentProtocols.features.forEach(function (d) { // d indicate a feature of currentProtocols
+                    // contains is a spatial operation to determine whether a point within a bbox or not.
+                    if (currentMapBounds.contains(d.geometry.coordinates)) {
+                        // if within, the # of the earthquake in the same magnitude increase by 1.
+                        protocolClasses[d.properties.proto] += 1;
+                    }
 
-            //     })
-            //     return protocolClasses;
-            // }
+                })
+                return protocolClasses;
+            }
         });
     </script>
 
