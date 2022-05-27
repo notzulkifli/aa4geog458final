@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CyberAttacks Vizualized</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+    <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet">
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+    <style>
+        #body {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* sidebar */
+        #info {
+            z-index: 1000;
+            position: absolute;
+            width: 500px;
+            top: 1%;
+            bottom: 1%;
+            left: .5%;
+            padding: 40px 15px 900px 15px;
+            background: #343a40;
+            color: white;
+        }
+
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="info">
+        <div id="title">
+            CyberAttacks Vizualized
+            <span id="reset"><a href="#">reset</a></span>
+        </div>
+        <div id="protocols-chart"></div>
+
+        <div id="footer">
+            Information Here
+        </div>
+        <div id="About Us">
+            <span id="About Us"><a href="https.github.com">About Us</a></span>
+        </div>
+    </div>
+    <div id="map"></div>
+    <script>
+        mapboxgl.accessToken =
+            'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNpcms2YWsyMzAwMmtmbG5icTFxZ3ZkdncifQ.P9MBej1xacybKcDN_jehvw';
+        let map = new mapboxgl.Map({
+            container: 'map', // container ID
+            style: 'mapbox://styles/mapbox/dark-v10',
+            zoom: 2, // starting zoom
+            center: [-12.099477714862594, 31.186699510589147] // starting center
+        });
+
+        async function geojsonFetch() {
+
+            // Await operator is used to wait for a promise. 
+            // An await can cause an async function to pause until a Promise is settled.
+            let response;
+            response = await fetch('assets/aws_honeypot.geojson');
+            attacks = await response.json();
+
+
+            map.on('load', () => { //simplifying the function statement: arrow with brackets to define a function
+
+            });
+
+
+
+            //load data to the map as new layers.
+            //map.on('load', function loadingData() {
+            map.on('idle', () => { //simplifying the function statement: arrow with brackets to define a function
+
+            });
+
+
+
+        }
+
+        // call the function
+        geojsonFetch();
+
+        const protos = ["UDP", "TCP", "ICMP"],
+            colors = ['rgb(181,126,220)', 'rgb(103,169,207)', 'rgb(1,108,89)']
+
+        map.on('load', () => { //simplifying the function statement: arrow with brackets to define a function
+
+            // when loading a geojson, there are two steps
+            // add a source of the data and then add the layer out of the source
+            map.addSource('aws_honeypot', {
+                type: 'geojson',
+                data: 'assets/aws_honeypot.geojson'
+                // cluster: true,
+                // clusterMaxZoom: 14,
+                // clusterRadius: 50
+            });
+
+            map.addLayer({
+                'id': 'clusters',
+                'type': 'circle',
+                'source': 'aws_honeypot',
+                filter: ['has', 'proto'],
+                paint: {
+                    'circle-color': [
+                        'match',
+                        ['get', 'proto'],
+                        'UDP',
+                        '#fbb03b',
+                        'TCP',
+                        '#223b53',
+                        'ICMP',
+                        '#e55e5e',
+                        /* other */
+                        '#ccc'
+                    ],
+                    'circle-stroke-color': 'white',
+                    'circle-stroke-width': 1,
+                    'circle-opacity': 0.6
+                }
+            });
+
+
+            // click on tree to view cases in a popup
+            map.on('click', 'clusters', (e) => {
+                const features = map.queryRenderedFeatures(e.point, {
+                    layers: ['clusters']
+                });
+                const clusterId = features[0].properties.cluster_id;
+                map.getSource('earthquakes').getClusterExpansionZoom(
+                    clusterId,
+                    (err, zoom) => {
+                        if (err) return;
+
+                        map.easeTo({
+                            center: features[0].geometry.coordinates,
+                            zoom: zoom
+                        });
+                    }
+                );
+            });
+
+            // found the the Protocols of all the attacks in the displayed map view.        
+            //protocols = calProtocols(aws_honeypot, map.getBounds());
+            var protocols = {'TCP':3,'ICMP':7, 'UDP':5}
+
+            // enumerate the number of earthquakes.
+            // numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
+
+            // // update the content of the element earthquake-count.
+            // document.getElementById("earthquake-count").innerHTML = numEarthquakes;
+
+            // add "proot" to the beginning of the x variable - the magnitude, and "#" to the beginning of the y variable - the number of earthquake of similar magnitude.
+
+            protocolsChart = c3.generate({
+                size: {
+                    height: 350,
+                    width: 460
+                },
+                data: {
+                    x: 'proto',
+                    columns: [x, y],
+                    type: 'bar', // make a bar chart.
+                    colors: {
+                        '#': (d) => {
+                            return colors[d["x"]];
+                        }
+                    }
+                },
+                axis: {
+                    x: { //magnitude
+                        type: 'category',
+                    },
+                    y: { //count
+                        tick: {
+                            values: [10, 20, 30, 40]
+                        }
+                    }
+                },
+                legend: {
+                    show: false
+                },
+                bindto: "#protocols-chart" //bind the chart to the place holder element "earthquake-chart".
+            });
+
+            map.on('idle', () => { //simplifying the function statement: arrow with brackets to define a function
+                
+                protocols = calProtocols(attacks, map.getBounds());
+                //magnitudes = calEarthquakes(earthquakes, map.getBounds());
+                //numEarthquakes = magnitudes[4] + magnitudes[5] + magnitudes[6];
+                //document.getElementById("earthquake-count").innerHTML = numEarthquakes;
+
+
+                x = Object.keys(protocols);
+                x.unshift("proto")
+                y = Object.values(protocols);
+                y.unshift("#")
+
+                // after finishing each map reaction, the chart will be rendered in case the current bbox changes.
+                protocolsChart.load({
+                    columns: [x, y]
+                });
+            });
+
+            geojsonFetch();
+
+            function calProtocols(currentProtocols, currentMapBounds) {
+
+                let protocolClasses = {
+                    "TCP": 0,
+                    "UDP": 0,
+                    "ICMP": 0
+                };
+                currentProtocols.features.forEach(function (d) { // d indicate a feature of currentProtocols
+                    // contains is a spatial operation to determine whether a point within a bbox or not.
+                    if (currentMapBounds.contains(d.geometry.coordinates)) {
+                        // if within, the # of the earthquake in the same magnitude increase by 1.
+                        protocolClasses[d.properties.proto] += 1;
+                    }
+
+                })
+                return protocolClasses;
+            }
+        });
+    </script>
+
+</body>
+
+</html>
