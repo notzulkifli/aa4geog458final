@@ -5,11 +5,9 @@
     <meta charset="utf-8">
     <title>CyberAttacks Vizualized</title>
     <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-    <link href="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.css" rel="stylesheet">
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.css" rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.min.js"></script>
+    <script src="js/d3.js"></script>
+    <script src="js/c3.min.js"></script>
     <style>
         #body {
             margin: 0;
@@ -35,6 +33,11 @@
             bottom: 0;
             width: 100%;
         }
+
+        #protocols-chart {
+            top: 20px;
+        }
+
     </style>
 </head>
 
@@ -44,7 +47,7 @@
             CyberAttacks Vizualized
             <span id="reset"><a href="#">reset</a></span>
         </div>
-        <div id="earthquake-chart"></div>
+        <div id="protocols-chart"></div>
 
         <div id="footer">
             Information Here
@@ -54,15 +57,23 @@
         </div>
     </div>
     <div id="map"></div>
+
     <script>
         mapboxgl.accessToken =
             'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNpcms2YWsyMzAwMmtmbG5icTFxZ3ZkdncifQ.P9MBej1xacybKcDN_jehvw';
+            
         let map = new mapboxgl.Map({
             container: 'map', // container ID
             style: 'mapbox://styles/mapbox/dark-v10',
             zoom: 2, // starting zoom
             center: [-12.099477714862594, 31.186699510589147] // starting center
         });
+
+        const protos = ["UDP", "TCP", "ICMP"],
+            colors = ['rgb(181,126,220)', 'rgb(103,169,207)', 'rgb(1,108,89)']
+
+        let chart = null;
+            // protocols = {};
 
         async function geojsonFetch() {
 
@@ -75,192 +86,174 @@
 
             map.on('load', () => { //simplifying the function statement: arrow with brackets to define a function
 
+                // when loading a geojson, there are two steps
+                // add a source of the data and then add the layer out of the source
+                map.addSource('aws_honeypot', {
+                    type: 'geojson',
+                    data: attacks
+                    // cluster: true,
+                    // clusterMaxZoom: 14,
+                    // clusterRadius: 50
+                });
+
+                map.addLayer({
+                    'id': 'clusters',
+                    'type': 'circle',
+                    'source': 'aws_honeypot',
+                    filter: ['has', 'proto'],
+                    paint: {
+                        'circle-color': [
+                            'match',
+                            ['get', 'proto'],
+                            'UDP',
+                            '#fbb03b',
+                            'TCP',
+                            '#223b53',
+                            'ICMP',
+                            '#e55e5e',
+                            /* other */
+                            '#ccc'
+                        ],
+                        'circle-stroke-color': 'white',
+                        'circle-stroke-width': 1,
+                        'circle-opacity': 0.6
+                    }
+                });
+
+                // // click on tree to view cases in a popup
+                // map.on('click', 'clusters', (e) => {
+                //     const features = map.queryRenderedFeatures(e.point, {
+                //         layers: ['clusters']
+                //     });
+                //     const clusterId = features[0].properties.cluster_id;
+                //     map.getSource('earthquakes').getClusterExpansionZoom(
+                //         clusterId,
+                //         (err, zoom) => {
+                //             if (err) return;
+
+                //             map.easeTo({
+                //                 center: features[0].geometry.coordinates,
+                //                 zoom: zoom
+                //             });
+                //         }
+                //     );
+                // });
+
+                // found the the Protocols of all the attacks in the displayed map view. 
+                // ***** COMMENT BY STEVEN: Here you should use `attacks` as it is the variable 
+                // which we stored the geojson data in at the beginning of the geojsonFetch() function
+
+                protocols = calProtocols(attacks, map.getBounds());
+                //console.log(protocols["TCP"]);
+                // var protocols = {
+                //     'TCP': 3,
+                //     'ICMP': 7,
+                //     'UDP': 5
+                // }
+
+                // enumerate the number of earthquakes.
+                //numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
+
+
+                //***** COMMENTS BY STEVEN: This `earthquake-count` is referring to the HTML element
+                //***** with the id `earthquake-count` in the example webpage.
+                //***** `document.getElementById()` is a built-in basic JS function to get specific HTML elements.
+                //***** There are other similar functions such as `document.getElementsByClass()`
+                // // update the content of the element earthquake-count.
+                // document.getElementById("earthquake-count").innerHTML = numEarthquakes;
+
+                // add "proot" to the beginning of the x variable - the magnitude, and "#" to the beginning of the y variable - the number of earthquake of similar magnitude.
+                x = Object.keys(protocols);
+                x.unshift("proto")
+                y = Object.values(protocols);
+                y.unshift("#")
+
+                chart = c3.generate({
+                    size: {
+                        height: 350,
+                        width: 460
+                    },
+
+                    data: {
+                        x: 'proto',     //***** COMMENTS BY STEVEN: You should use the correct field name in the geojson data
+                        columns: [x, y],
+                        type: 'bar'
+                    },
+                    axis: {
+                        y: {
+                            label: {
+                                text: 'Number of Attacks',
+                                position: 'outer-middle'
+                            },
+
+                            max: 1000,
+                            min: 0,
+                        },
+
+                        x: {
+                            type: 'category',
+                        }
+                    },
+
+                    bar: {
+                        width: {
+                            ratio: 0.5
+                        }
+                    },
+                    legend: {
+                        show: false
+                    },
+
+                    bindto: '#protocols-chart'
+
+                });
             });
-
-
 
             //load data to the map as new layers.
             //map.on('load', function loadingData() {
             map.on('idle', () => { //simplifying the function statement: arrow with brackets to define a function
+                attackTypes = calProtocols(attacks, map.getBounds());
+                numAttacks = attackTypes[4] + attackTypes[5] + attackTypes[6];
 
+                x = Object.keys(attackTypes);
+                x.unshift("mag")
+                y = Object.values(attackTypes);
+                y.unshift("#")
+
+                // after finishing each map reaction, the chart will be rendered in case the current bbox changes.
+                //***** COMMENT BY STEVEN: the `.load` function will reload the chart based on the new values
+                chart.load({
+                    columns: [x, y]
+                });
             });
-
-
-
         }
 
         // call the function
         geojsonFetch();
 
-        const protos = ["UDP", "TCP", "ICMP"],
-            colors = ['rgb(181,126,220)', 'rgb(103,169,207)', 'rgb(1,108,89)']
-
-        map.on('load', () => { //simplifying the function statement: arrow with brackets to define a function
-
-            // when loading a geojson, there are two steps
-            // add a source of the data and then add the layer out of the source
-            map.addSource('aws_honeypot', {
-                type: 'geojson',
-                data: 'assets/aws_honeypot.geojson'
-                // cluster: true,
-                // clusterMaxZoom: 14,
-                // clusterRadius: 50
-            });
-
-            map.addLayer({
-                'id': 'clusters',
-                'type': 'circle',
-                'source': 'aws_honeypot',
-                filter: ['has', 'proto'],
-                paint: {
-                    'circle-color': [
-                        'match',
-                        ['get', 'proto'],
-                        'UDP',
-                        '#fbb03b',
-                        'TCP',
-                        '#223b53',
-                        'ICMP',
-                        '#e55e5e',
-                        /* other */
-                        '#ccc'
-                    ],
-                    'circle-stroke-color': 'white',
-                    'circle-stroke-width': 1,
-                    'circle-opacity': 0.6
-                }
-            });
-
-
-            // click on tree to view cases in a popup
-            map.on('click', 'clusters', (e) => {
-                const features = map.queryRenderedFeatures(e.point, {
-                    layers: ['clusters']
-                });
-                const clusterId = features[0].properties.cluster_id;
-                map.getSource('earthquakes').getClusterExpansionZoom(
-                    clusterId,
-                    (err, zoom) => {
-                        if (err) return;
-
-                        map.easeTo({
-                            center: features[0].geometry.coordinates,
-                            zoom: zoom
-                        });
-                    }
-                );
-            });
-
-            // found the the Protocols of all the attacks in the displayed map view.        
-            protocols = calProtocols(aws_honeypot, map.getBounds());
-            // var protocols = {'TCP':3,'ICMP':7, 'UDP':5}
-
-            // enumerate the number of earthquakes.
-            numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
-
-            // // update the content of the element earthquake-count.
-            // document.getElementById("earthquake-count").innerHTML = numEarthquakes;
-
-            // add "proot" to the beginning of the x variable - the magnitude, and "#" to the beginning of the y variable - the number of earthquake of similar magnitude.
-            x = Object.keys(protocols);
-            x.unshift("proto")
-            y = Object.values(protocols);
-            y.unshift("#")
-
-            protocolsChart = c3.generate({
-                size: {
-                    height: 350,
-                    width: 460
-                },
-                data: {
-                    x: 'proto',
-                    columns: [x, y],
-                    type: 'bar', // make a bar chart.
-                    colors: {
-                        '#': (d) => {
-                            return colors[d["x"]];
-                        }
-                    }
-                    // onclick: function (d) { // update the map and sidebar once the bar is clicked.
-                    //     let floor = parseInt(x[1 + d["x"]]),
-                    //         ceiling = floor + 1;
-                    //     // combine two filters, the first is ['>=', 'mag', floor], the second is ['<', 'mag', ceiling]
-                    //     // the first indicates all the earthquakes with magnitude greater than floor, the second indicates
-                    //     // all the earthquakes with magnitude smaller than the ceiling.
-                    //     map.setFilter('earthquakes-point',
-                    //         ['all',
-                    //             ['>=', 'mag', floor],
-                    //             ['<', 'mag', ceiling]
-                    //         ]);
-                    // }
-                },
-                axis: {
-                    x: { //magnitude
-                        type: 'category',
-                    },
-                    y: { //count
-                        tick: {
-                            values: [10, 20, 30, 40]
-                        }
-                    }
-                },
-                legend: {
-                    show: false
-                },
-                bindto: "#earthquake-chart" //bind the chart to the place holder element "earthquake-chart".
-            });
-
-            // chart = c3.generate({
-            //     bindto: '#earthquake-chart',
-            //     data: {
-            //         x: 'Protocol',
-            //         columns: [
-            //             ['Protocol', 'TCP', 'UDP', 'ICMP'],
-            //             ['Values', 49, 76, 253]
-            //         ],
-            //         type: 'bar'
-            //     },
-            //     axis: {
-            //         y: {
-            //             label: {
-            //                 text: 'Number of Attacks',
-            //                 position: 'outer-middle'
-            //             }
-            //         },
-            //         x: {
-            //             type: 'category',
-            //         }
-            //     },
-            //     bar: {
-            //         width: {
-            //             ratio: 0.5
-            //         }
-            //     },
-            //     legend: {
-            //         show: false
-            //     }
-            // });
-            // call the geojson loading function
-            geojsonFetch();
-
-            function calProtocols(currentProtocols, currentMapBounds) {
-
-                let protocolClasses = {
-                    "TCP": 0,
-                    "UDP": 0,
-                    "ICMP": 0
-                };
-                currentProtocols.features.forEach(function (d) { // d indicate a feature of currentProtocols
-                    // contains is a spatial operation to determine whether a point within a bbox or not.
-                    if (currentMapBounds.contains(d.geometry.coordinates)) {
+        function calProtocols(currentProtocols, currentMapBounds) {
+            let protocolClasses = {
+                "TCP": 0,
+                "UDP": 0,
+                "ICMP": 0
+            };
+            currentProtocols.features.forEach(function (d) { // d indicate a feature of currentProtocols
+                //***** COMMENT BY STEVEN: Here I added another if statement to detect if there is a feature
+                // without coordinates definition. If so, ignore it, since the feature in the geojson data
+                // will not appear on your map (because it has no coodinates)
+                if (d.geometry != null) {
+                    if (d.geometry.coordinates[1] > -90 && d.geometry.coordinates[1] < 90) {
+                        if (currentMapBounds.contains(d.geometry.coordinates)) {
                         // if within, the # of the earthquake in the same magnitude increase by 1.
                         protocolClasses[d.properties.proto] += 1;
+                        }
                     }
+                }
 
-                })
-                return protocolClasses;
-            }
-        });
+            })
+            return protocolClasses;
+        }
+
     </script>
 
 </body>
