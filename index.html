@@ -46,6 +46,45 @@
         fill:whitesmoke;
         }
 
+        /* TEMP: the layout of the legend panel */
+        #legend {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 110px;
+        height: auto;
+        background: whitesmoke;
+        color: black;
+        margin-right: 20px;
+        margin-bottom: 40px;
+        padding: 10px 20px 10px 10px;
+        border-radius: 3px;
+        text-align: center;
+        font-family: 'Open Sans', sans-serif;
+        }
+
+        /* each line for a break */
+        .break {
+        position: relative;
+        margin: 0px;
+        padding: 0px;
+        }
+
+        /* basic style for a dot/circle */
+        .dot {
+        display: inline-block;
+        margin-top: 5px;
+        border-radius: 50%;
+        }
+
+        /* the label for the dot */
+        .dot-label {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-style: italic;
+        }
+
     </style>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
@@ -62,11 +101,14 @@
         </div>
         <div id="protocols-chart"></div>
 
+        <div id="legend">
+        </div>
+
         <div id="footer">
             Information Here
         </div>
         <div id="About Us">
-            <span id="About Us"><a href="https.github.com">About Us</a></span>
+            <span id="About Us"><a href="about.html">About Us</a></span>
         </div>
     </div>
     <div id="map"></div>
@@ -87,6 +129,28 @@
             '#fbb03b',
             '#223b53',
             '#e55e5e']
+
+        // create the legend object and anchor it to the html element with id legend.
+        const legend = document.getElementById('legend');
+
+        //set up legend grades content and labels
+        let labels = ['<strong>Protocols</strong>'],
+        vbreak;
+
+        //iterate through grades and create a scaled circle and label for each
+        for (var i = 0; i < protos.length; i++) {
+            vbreak = protos[i];
+            // you need to manually adjust the radius of each dot on the legend 
+            // in order to make sure the legend can be properly referred to the dot on the map.
+            dot_radii = 15;
+            labels.push(
+                '<p class="break"><i class="dot" style="background:' + colors[i] + '; width: ' + dot_radii +
+                'px; height: ' +
+                dot_radii + 'px; "></i> <span class="dot-label" style="top: ' + dot_radii / 2 + 'px;">' + vbreak +
+                '</span></p>');
+
+        }
+        legend.innerHTML = labels.join('');
 
         let chart = null;
             // protocols = {};
