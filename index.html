@@ -33,6 +33,27 @@
             width: 100%;
         }
 
+        #tcp {
+            margin: 0;
+            text-align: center;
+            color: orange;
+            font-size: 20px;
+        }
+
+        #idp {
+            margin: 0;
+            text-align: center;
+            color: orange;
+            font-size: 20px;
+        }
+
+        #udp {
+            margin: 0;
+            text-align: center;
+            color: orange;
+            font-size: 20px;
+        }
+
         #protocols-chart {
             top: 20px;
         }
@@ -99,6 +120,14 @@
             CyberAttacks Vizualized
             <span id="reset"><a href="#">reset</a></span>
         </div>
+        <div id="count" class="card">
+            <h5 id="desc"> # TCP Attacks</h5>
+            <p id="tcp"></p>
+            <h5 id="desc"> # ICMP Attacks</h5>
+            <p id="idp"></p>
+            <h5 id="desc"> # UDP Attacks</h5>
+            <p id="udp"></p>
+        </div>
         <div id="protocols-chart"></div>
 
         <div id="legend">
@@ -153,6 +182,9 @@
         legend.innerHTML = labels.join('');
 
         let chart = null;
+            numTCP = 0,
+            numICP = 0,
+            numUDP = 0,
             // protocols = {};
 
         async function geojsonFetch() {
@@ -234,6 +266,16 @@
                 // enumerate the number of earthquakes.
                 //numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
 
+                umTCP = protocols["TCP"];
+                numICP = protocols["ICMP"];
+                numUDP = protocols["UDP"];
+
+                //console.log(protocols["TCP"]);
+
+                document.getElementById("tcp").innerHTML = numTCP;
+                document.getElementById("idp").innerHTML = numICP;
+                document.getElementById("udp").innerHTML = numUDP;
+
 
                 //***** COMMENTS BY STEVEN: This `earthquake-count` is referring to the HTML element
                 //***** with the id `earthquake-count` in the example webpage.
@@ -297,12 +339,20 @@
             //load data to the map as new layers.
             //map.on('load', function loadingData() {
             map.on('idle', () => { //simplifying the function statement: arrow with brackets to define a function
-                attackTypes = calProtocols(attacks, map.getBounds());
-                numAttacks = attackTypes[4] + attackTypes[5] + attackTypes[6];
+                protocols = calProtocols(attacks, map.getBounds());
+                //numAttacks = attackTypes[4] + attackTypes[5] + attackTypes[6];
 
-                x = Object.keys(attackTypes);
+                numTCP = protocols["TCP"];
+                numICP = protocols["ICMP"];
+                numUDP = protocols["UDP"];
+
+                document.getElementById("tcp").innerHTML = numTCP;
+                document.getElementById("idp").innerHTML = numICP;
+                document.getElementById("udp").innerHTML = numUDP;
+
+                x = Object.keys(protocols);
                 x.unshift("mag")
-                y = Object.values(attackTypes);
+                y = Object.values(protocols);
                 y.unshift("#")
 
                 // after finishing each map reaction, the chart will be rendered in case the current bbox changes.
