@@ -154,10 +154,7 @@
         });
 
         const protos = ["UDP", "TCP", "ICMP"],
-            colors = [
-            '#fbb03b',
-            '#223b53',
-            '#e55e5e']
+            colors = ['rgb(251, 176, 59)', 'rgb(34, 59, 83)', 'rgb(229, 94, 94)']
 
         // create the legend object and anchor it to the html element with id legend.
         const legend = document.getElementById('legend');
@@ -266,16 +263,16 @@
                 // enumerate the number of earthquakes.
                 //numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
 
+                numUDP = protocols["UDP"];
                 umTCP = protocols["TCP"];
                 numICP = protocols["ICMP"];
-                numUDP = protocols["UDP"];
-
+                
                 //console.log(protocols["TCP"]);
-
+                
+                document.getElementById("udp").innerHTML = numUDP;
                 document.getElementById("tcp").innerHTML = numTCP;
                 document.getElementById("idp").innerHTML = numICP;
-                document.getElementById("udp").innerHTML = numUDP;
-
+                
 
                 //***** COMMENTS BY STEVEN: This `earthquake-count` is referring to the HTML element
                 //***** with the id `earthquake-count` in the example webpage.
@@ -302,8 +299,8 @@
                     type: 'bar',
                     colors: {
                         '#': (d) => {
-                            return colors[d["x"]];
-                        }
+                                return colors[d["x"]];
+                            }
                     }
                     },
                     axis: {
@@ -342,16 +339,16 @@
                 protocols = calProtocols(attacks, map.getBounds());
                 //numAttacks = attackTypes[4] + attackTypes[5] + attackTypes[6];
 
+                numUDP = protocols["UDP"];
                 numTCP = protocols["TCP"];
                 numICP = protocols["ICMP"];
-                numUDP = protocols["UDP"];
 
+                document.getElementById("udp").innerHTML = numUDP;
                 document.getElementById("tcp").innerHTML = numTCP;
                 document.getElementById("idp").innerHTML = numICP;
-                document.getElementById("udp").innerHTML = numUDP;
-
+                
                 x = Object.keys(protocols);
-                x.unshift("mag")
+                x.unshift("proto")
                 y = Object.values(protocols);
                 y.unshift("#")
 
@@ -368,8 +365,8 @@
 
         function calProtocols(currentProtocols, currentMapBounds) {
             let protocolClasses = {
-                "TCP": 0,
                 "UDP": 0,
+                "TCP": 0,
                 "ICMP": 0
             };
             currentProtocols.features.forEach(function (d) { // d indicate a feature of currentProtocols
