@@ -110,6 +110,54 @@
             color: black !important;
         }
 
+        filter-group {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            font-weight: 600;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1;
+            border-radius: 3px;
+            width: 120px;
+            color: #fff;
+            }
+            
+        .filter-group input[type='checkbox']:first-child + label {
+            border-radius: 3px 3px 0 0;
+            }
+            
+        .filter-group label:last-child {
+            border-radius: 0 0 3px 3px;
+            border: none;
+            }
+            
+        .filter-group input[type='checkbox'] {
+            display: none;
+            }
+            
+        .filter-group input[type='checkbox'] + label {
+            background-color: #3386c0;
+            display: block;
+            cursor: pointer;
+            padding: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+            }
+            
+        .filter-group input[type='checkbox'] + label {
+            background-color: #3386c0;
+            text-transform: capitalize;
+            }
+            
+        .filter-group input[type='checkbox'] + label:hover,
+        .filter-group input[type='checkbox']:checked + label {
+            background-color: #4ea0da;
+            }
+            
+        .filter-group input[type='checkbox']:checked + label:before {
+            content: '✔';
+            margin-right: 5px;
+        }
+
     </style>
 
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.8.1/mapbox-gl.js"></script>
@@ -145,11 +193,14 @@
         </div>
     </div>
     <div id="map"></div>
+    <nav id="filter-group" class="filter-group"></nav>
 
     <script>
         mapboxgl.accessToken =
             'pk.eyJ1IjoiamFrb2J6aGFvIiwiYSI6ImNpcms2YWsyMzAwMmtmbG5icTFxZ3ZkdncifQ.P9MBej1xacybKcDN_jehvw';
-            
+        
+        const filterGroup = document.getElementById('filter-group');
+
         let map = new mapboxgl.Map({
             container: 'map', // container ID
             style: 'mapbox://styles/mapbox/dark-v10',
@@ -209,29 +260,53 @@
                     // clusterRadius: 50
                 });
 
-                map.addLayer({
-                    'id': 'clusters',
-                    'type': 'circle',
-                    'source': 'aws_honeypot',
-                    filter: ['has', 'proto'],
-                    paint: {
-                        'circle-color': [
-                            'match',
-                            ['get', 'proto'],
-                            'UDP',
-                            '#fbb03b',
-                            'TCP',
-                            '#223b53',
-                            'ICMP',
-                            '#e55e5e',
-                            /* other */
-                            '#ccc'
-                        ],
-                        'circle-stroke-color': 'white',
-                        'circle-stroke-width': 1,
-                        'circle-opacity': 0.6
+                for (const feature of attacks.features) {
+                    const layerID = "" + feature.properties.proto
+                    if (!map.getLayer(layerID)) {
+                        map.addLayer({
+                            'id': layerID,
+                            'type': 'circle',
+                            'source': 'aws_honeypot',
+                            filter: ['==', 'proto', layerID],
+                            paint: {
+                                'circle-color': [
+                                    'match',
+                                    ['get', 'proto'],
+                                    'UDP',
+                                    '#fbb03b',
+                                    'TCP',
+                                    '#223b53',
+                                    'ICMP',
+                                    '#e55e5e',
+                                    /* other */
+                                    '#ccc'
+                                ],
+                                'circle-stroke-color': 'white',
+                                'circle-stroke-width': 1,
+                                'circle-opacity': 0.6
+                            }
+                        });
+
+                        const input = document.createElement('input');
+                        input.type = 'checkbox';
+                        input.id = layerID;
+                        input.checked = true;
+                        filterGroup.appendChild(input);
+
+                        const label = document.createElement('label');
+                        label.setAttribute('for', layerID);
+                        label.textContent = "" + layerID;
+                        filterGroup.appendChild(label);
+
+                        input.addEventListener('change', (e) => {
+                            map.setLayoutProperty(
+                                layerID,
+                                'visibility',
+                                e.target.checked ? 'visible' : 'none'
+                            );
+                        });
                     }
-                });
+                }
 
                 // // click on tree to view cases in a popup
                 // map.on('click', 'clusters', (e) => {
