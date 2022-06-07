@@ -236,7 +236,6 @@
             numTCP = 0,
             numICP = 0,
             numUDP = 0;
-            // protocols = {};
 
         async function geojsonFetch() {
 
@@ -304,45 +303,16 @@
                     }
                 }
 
-                // // click on tree to view cases in a popup
-                // map.on('click', 'clusters', (e) => {
-                //     const features = map.queryRenderedFeatures(e.point, {
-                //         layers: ['clusters']
-                //     });
-                //     const clusterId = features[0].properties.cluster_id;
-                //     map.getSource('earthquakes').getClusterExpansionZoom(
-                //         clusterId,
-                //         (err, zoom) => {
-                //             if (err) return;
-
-                //             map.easeTo({
-                //                 center: features[0].geometry.coordinates,
-                //                 zoom: zoom
-                //             });
-                //         }
-                //     );
-                // });
-
                 // found the the Protocols of all the attacks in the displayed map view. 
                 // ***** COMMENT BY STEVEN: Here you should use `attacks` as it is the variable 
                 // which we stored the geojson data in at the beginning of the geojsonFetch() function
 
                 protocols = calProtocols(attacks, map.getBounds());
-                //console.log(protocols["TCP"]);
-                // var protocols = {
-                //     'TCP': 3,
-                //     'ICMP': 7,
-                //     'UDP': 5
-                // }
 
                 // enumerate the number of earthquakes.
-                //numProtocols = protocols["TCP"] + protocols["UDP"] + protocols["ICMP"];
-
                 numUDP = protocols["UDP"];
                 umTCP = protocols["TCP"];
                 numICP = protocols["ICMP"];
-                
-                //console.log(protocols["TCP"]);
                 
                 document.getElementById("udp").innerHTML = numUDP;
                 document.getElementById("tcp").innerHTML = numTCP;
@@ -377,11 +347,11 @@
                     },
 
                     data: {
-                    x: 'proto', //***** COMMENTS BY STEVEN: You should use the correct field name in the geojson data
+                    x: 'proto',
                     columns: [x, y],
                     type: 'bar',
                     onclick: function (d, protos) {
-                        return protos[d["x"]];
+                        hide
                     },
                     colors: {
                         '#': (d) => {
