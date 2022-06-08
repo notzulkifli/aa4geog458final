@@ -5,7 +5,7 @@
         <title>About Cyber-verse</title>
         <meta charset="utf-8" />
         <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
-        <link href="css/team-members-style.css" rel="stylesheet">
+        <link href="css/about-page.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
@@ -37,7 +37,41 @@
                 on the current body of information by visualizing the relationship between geography and cyber attacks as 
                 well as by highlighting cyber attack trends.</p>
         </div>
+        <h1 class="title_text space"><b>Acknowledgement</b></h1>
+        <div class="parent">
+            <div class="small_dimensions">
+                <br>
+                <img class="about-us-img-crop" src="img/bo.jfif" alt="Picture of Professor Bo">
+                <p class="description-name"><b>Professor: Bo Zhao</b></p>
+            </div>
+            <p class="description" style="margin-top: 50px">Professor Zhao is the foundation our projects and has challenged many of his students, including us, to story-tell through map-making. Utiizing MapBox GL JS, we are tasked to find a topic we are passionate about, and create a story-board or smart dashboard. We have chosen to display our knowledge of smart dashboards and Professor Bo, has provided many resources for us to make use of which includes references to C3 and D3 which will be shown in our map of CyberAttacks.</p>
+
+            <div class="small_dimensions">
+                <br>
+                <img class="about-us-img-crop" src="img/steven.png" alt="Picture of TA Steven">
+                <p class="description-name"><b>TA: Steven (Xiaoqi) Bao</b></p>
+            </div>
+            <p class="description" style="margin-top: 50px">TA Steven Bao has been of great help, guiding us through the different challenges we had stumbled upon while coding the smart dashboard. Steven's hints and advice has allowed us to further comprehend the tasks to create a successful smart dashboard, as well as helping us understand how to reach the solutions to the challenges we've reached along the way. </p>
+        </div>
+        <h1 class="title_text space"><b>Data Source</b></h1>
+        <p class="description">
+            <a href="https://www.kaggle.com/datasets/casimian2000/aws-honeypot-attack-data" style="font-size: 24px;"><b>Kaggle</b></a>
+            <p class="description">'Kaggle' is a clickable link for future analysis.</p>
+            <p class="description">Using the AWS Honeypot Attack Data, we wanted to achieve a fully navigational map that changes the bar chart and information being displayed as you zoom in and out and move around the map itself. We focused on the 'proto' variable within the data that classifies the different attack types. 'TCP', 'UDP, and ICMP' are the information being cycled through as you move around the map. While Navigating the map the amount of points displayed on the map will dictate the number of attacks display and the bar chart representatoin as well. Using C3 and D3, we were able to achieve such a feature.</p>
+        </p>
     </main>
+    <script src="js/hamburger.js"></script>
 </body>
+
+<footer>
+    <p class="description space" style="font-size: 15px">&copy; AA4: Henry Lin, Jo Inoue, Matthew Wicaksono, Parker Mullen, and Zulkifli Sales of class GEOG 458</p>
+    <p class="description" style="font-size: 15px">Undergraduate students at the<a href="https://www.washington.edu/"> University of Washington (Seattle)</a></p>
+    <address class="description" style="font-size: 15px">Contact us at:
+        <h3>Our Github:</h3>
+            <p>
+            <a href="https://github.com/notzulkifli/aa4geog458final"><i class=" fa fa-github" style="font-size:48px;color:white"></i></a>
+        </p>
+    </address>
+</footer>
 
 </html>
