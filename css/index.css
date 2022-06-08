@@ -1,0 +1,171 @@
+#body {
+    margin: 0;
+    padding: 0;
+}
+
+/* sidebar */
+#info {
+    z-index: 1000;
+    position: absolute;
+    width: 500px;
+    top: 1%;
+    bottom: 1%;
+    padding: 40px 15px 0px 15px;
+    background: rgb(80, 54, 54);
+    color: white;
+    border-radius: 8px;
+}
+
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+#tcp {
+    margin: 0;
+    text-align: center;
+    color: orange;
+    font-size: 20px;
+}
+
+#idp {
+    margin: 0;
+    text-align: center;
+    color: orange;
+    font-size: 20px;
+}
+
+#udp {
+    margin: 0;
+    text-align: center;
+    color: orange;
+    font-size: 20px;
+}
+
+#protocols-chart {
+    top: 20px;
+}
+
+.c3-axis-y text {
+    fill: whitesmoke;
+    font-size: 12px;
+}
+
+.c3-axis-x text {
+    font-size: 12px;
+    fill: whitesmoke;
+}
+
+#legend {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 110px;
+    height: auto;
+    background: whitesmoke;
+    color: black;
+    margin-right: 20px;
+    margin-bottom: 40px;
+    padding: 10px 20px 10px 10px;
+    border-radius: 3px;
+    text-align: center;
+    font-family: 'Open Sans', sans-serif;
+}
+
+/* each line for a break */
+.break {
+    position: relative;
+    margin: 0px;
+    padding: 0px;
+}
+
+/* basic style for a dot/circle */
+.dot {
+    display: inline-block;
+    margin-top: 5px;
+    border-radius: 50%;
+}
+
+/* the label for the dot */
+.dot-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-style: italic;
+}
+
+.c3-tooltip td {
+    color: black !important;
+}
+
+.filter-group {
+    font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-weight: 600;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+    border-radius: 3px;
+    width: 120px;
+    color: #fff;
+}
+
+.filter-group input[type='checkbox']:first-child+label {
+    border-radius: 3px 3px 0 0;
+}
+
+.filter-group label:last-child {
+    border-radius: 0 0 3px 3px;
+    border: none;
+}
+
+.filter-group input[type='checkbox'] {
+    display: none;
+}
+
+.filter-group input[type='checkbox']+label {
+    background-color: rgb(80, 54, 54);
+    display: block;
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.filter-group input[type='checkbox']+label {
+    background-color: rgb(80, 54, 54);
+    text-transform: capitalize;
+}
+
+.filter-group input[type='checkbox']+label:hover,
+.filter-group input[type='checkbox']:checked+label {
+    background-color: rgb(80, 54, 54);
+}
+
+.filter-group input[type='checkbox']:checked+label:before {
+    content: '✔';
+    margin-right: 5px;
+}
+
+div a {
+    color: aliceblue;
+    transition: all 0.3s ease 0s;
+    text-decoration: none;
+}
+
+div a:hover {
+    color: #FFBf00
+}
+
+#reset {
+    float: right;
+}
+
+.space {
+    margin-top: 20px;
+}
+
+.index-buttons {
+    font-size: 20px;
+}
