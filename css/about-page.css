@@ -142,13 +142,13 @@ grid-column-gap: 0px;
 grid-row-gap: 0px;
 }
 
-ul ol a {
+p a {
     transition: all 0.3s ease 0s;
     text-decoration: none;
     color: aliceblue;
 }
 
-ul ol a:hover {
+p a:hover {
     color: #FFBf00
 }
 
